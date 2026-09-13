@@ -9,7 +9,7 @@ import seaborn as sb
 
 
 class Vehicle(mesa.Agent):
-    def __init__(self, model,fuel_type: str, max_speed: float) -> None:
+    def __init__(self, model, fuel_type: str, max_speed: float) -> None:
         super().__init__(model)
 
         self.fuel_type = fuel_type
@@ -37,6 +37,9 @@ class Vehicle(mesa.Agent):
         # Position will be based on the coordinate system of the environment either lat, lng or cartesian coordinates
         self.posx = posx
         self.posy = posy
+
+    def accelerate(self) -> None:
+        None
 
 
 """ TIPS

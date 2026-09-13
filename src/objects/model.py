@@ -19,6 +19,12 @@ class Model(mesa.Model):
         Vehicle.create_agents(
             model=self,
             n=n,
-            fuel_type=self.random.choices(engine_type, k=1),
+            fuel_type=self.random.choices(engine_type, k=n),
             max_speed=120.0,
         )
+
+    def step(self):
+        # Actions agents undertake per timestep.
+        # Random activation — each agent acts in a random order
+        self.agents.shuffle_do("accelerate") # randomly activate the agents and run the accelerate function.
+        
