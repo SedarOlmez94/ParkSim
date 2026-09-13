@@ -9,17 +9,14 @@ import seaborn as sb
 
 
 class Vehicle(mesa.Agent):
-    def __init__(self, id: int, fuel_type: str, max_speed: float, model) -> None:
+    def __init__(self, model,fuel_type: str, max_speed: float) -> None:
         super().__init__(model)
-        self.id = id
+
         self.fuel_type = fuel_type
         self.max_speed = max_speed
         # Initialize the position of the vehicle
         self.posx = 0
         self.posy = 0
-
-    def get_id(self) -> int:
-        return self.id
 
     def get_fuel_type(self) -> str:
         return self.fuel_type
@@ -29,9 +26,6 @@ class Vehicle(mesa.Agent):
 
     def get_position(self) -> tuple:
         return (self.posx, self.posy)
-
-    def set_id(self, id: int) -> None:
-        self.id = id
 
     def set_fuel_type(self, fuel_type: str) -> None:
         self.fuel_type = fuel_type
