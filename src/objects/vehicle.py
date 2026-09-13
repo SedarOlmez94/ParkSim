@@ -2,9 +2,15 @@
 This module defines the Vehicle class and its associated properties and methods.
 '''
 
+import mesa
+import numpy as np
+import pandas as pd
+import seaborn as sb
 
-class Vehicle:
-    def __init__(self, id: int, fuel_type: str, max_speed: float) -> None:
+
+class Vehicle(mesa.Agent):
+    def __init__(self, id: int, fuel_type: str, max_speed: float, model) -> None:
+        super().__init__(model)
         self.id = id
         self.fuel_type = fuel_type
         self.max_speed = max_speed
@@ -26,3 +32,8 @@ class Vehicle:
 
     def set_max_speed(self, max_speed: float) -> None:
         self.max_speed = max_speed
+
+
+''' TIPS
+self.model.agents -> a list of agents currently in the model. If you use random.choice(self.model.agents) a random active agent is selected.
+'''
