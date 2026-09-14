@@ -5,15 +5,21 @@ The MESA model object that initialises all agents, steps agent activation and al
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import mesa
-
+from mesa import Model
+from mesa.space import NetworkGrid
+from mesa.datacollection import DataCollector
 from vehicle import Vehicle
+import geopandas
+from geopandas import GeoDataFrame, sjoin
 
 
-class Model(mesa.Model):
-    def __init__(self, n=100) -> None:
+class Model(Model):
+    def __init__(self, n=100, iigraph = [], network = [], nodes_data: [GeoDataFrame] = None) -> None:
         super().__init__()
         engine_type = ["EV", "ICEV"]
+        self.igraph = iigraph
+        self.network = network
+        self.nodes = nodes_data
         # random_ids = np.random.uniform(0, self.n, size = self.n)
 
         Vehicle.create_agents(
@@ -23,12 +29,14 @@ class Model(mesa.Model):
             max_speed=120.0,
             lat=0.0,
             lon=0.0,
-            pos=0
+            pos=0,
+            destination=0, # Should be an osmnx node id
         )
+
+    
 
     def step(self):
         # Actions agents undertake per timestep.
         # Random activation — each agent acts in a random order
         # self.agents.shuffle_do("accelerate") # randomly activate the agents and run the accelerate function.
         pass
-        

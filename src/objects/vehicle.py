@@ -7,12 +7,15 @@ import mesa
 import numpy as np
 import pandas as pd
 import seaborn as sb
+import model
 
 
 class Vehicle(mesa.Agent):
-    def __init__(self, model, fuel_type: str, max_speed: float, lat: float, lon: float, pos: int) -> None:
-        super().__init__(model)
+    def __init__(
+        self, model: model.Model, fuel_type: str, max_speed: float, lat: float, lon: float, pos: int, destination: int
+    ) -> None:
 
+        super().__init__(model)
         self.fuel_type = fuel_type
         self.max_speed = max_speed
         # Initialize the position of the vehicle
@@ -23,6 +26,13 @@ class Vehicle(mesa.Agent):
         self.route = []
         self.route_index = 0
         self.pos_igraph_id = None
+        self.destination = destination
+        # We need to load some real Geopandas dataframe data to use index - 14/09
+        self.destination_igraph_id = self.model.nodes.index.get_loc(self.destination)
+        self.target = self.destination_igraph_id
+        # Current speed of vehicle in miles per hour.
+        self.current_vehicle_speed = 30 #mi/h 
+
 
     def get_fuel_type(self) -> str:
         return self.fuel_type
@@ -45,7 +55,7 @@ class Vehicle(mesa.Agent):
         self.lon = lon
 
     def update_location(self) -> None:
-        '''Update when driving'''
+        """Update when driving"""
         total_distance = self.distance_to_next_node() + self.distance_along_edge
         origin_node = self.model.nodes.loc[self.route[self.route_index]]
 
@@ -53,11 +63,28 @@ class Vehicle(mesa.Agent):
             self.update_position(lat=origin_node.geometry.y, lon=origin_node.geometry.x)
         else:
             k = self.distance_along_edge / total_distance
-            destination_node = self.model.nodes.loc[self.route[self.route_index + 1]] # select a random location within the available routes.
-            self.update_position(lat = k * destination_node.geometry.y + (1 - k) * origin_node.geometry.y,
-                                 lon = k * destination_node.geometry.x + (1 - k) * origin_node.geometry.x)
+            destination_node = self.model.nodes.loc[
+                self.route[self.route_index + 1]
+            ]  # select a random location within the available routes.
+            self.update_position(
+                lat=k * destination_node.geometry.y + (1 - k) * origin_node.geometry.y,
+                lon=k * destination_node.geometry.x + (1 - k) * origin_node.geometry.x,
+            )
 
         self.pos_igraph_id = self.model.nodes.index.get_loc(self.pos)
+
+
+    def update_route(self) -> None:
+        '''
+        Update the vehicle's route to the next segment.
+        This method should be called when the vehicle reaches the end of its current route segment.
+        '''
+        path = self.model.igraph.get_shortest_path(self.pos_igraph_id, self.target, weights="length")[0]
+        # Route returns a list of multidigraph node id 
+        self.route = self.model.nodes.iloc[path].index
+        self.route_index = 0
+        self.distance_along_edge = 0
+        self.current_vehicle_speed = 30
 
 
 
