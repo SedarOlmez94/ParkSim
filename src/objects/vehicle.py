@@ -24,6 +24,7 @@ class Vehicle(mesa.Agent):
         self.pos = pos
         self.distance_along_edge = 0
         self.route = []
+        self.currentRoad = None
         self.route_index = 0
         self.pos_igraph_id = None
         self.destination = destination
@@ -85,6 +86,24 @@ class Vehicle(mesa.Agent):
         self.route_index = 0
         self.distance_along_edge = 0
         self.current_vehicle_speed = 30
+
+
+    def distance_to_next_node(self) -> int:
+        if len(self.route) <= 1:
+            return 0
+        elif self.route_index == len(self.route) - 1:
+            self.finish()
+            return 100000000000
+        else:
+            edge = self.model.network.get_edge_data(self.route[self.route_index], self.route[self.route_index + 1])
+            if 'osmid' in edge[0].keys():
+                self.currentRoad = edge[0]['osmid']
+            s = edge[0]['length'] - self.distance_along_edge
+            if s > 0:
+                return s
+            else:
+                self.finish()
+                return 100000000000
 
 
 

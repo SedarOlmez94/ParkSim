@@ -11,16 +11,24 @@ from mesa.datacollection import DataCollector
 from vehicle import Vehicle
 import geopandas
 from geopandas import GeoDataFrame, sjoin
+from typing import Optional
 
 
 class Model(Model):
-    def __init__(self, n=100, iigraph = [], network = [], nodes_data: [GeoDataFrame] = None) -> None:
+    def __init__(self, n=100, iigraph = [], network = [], nodes_data: Optional[GeoDataFrame] = None) -> None:
         super().__init__()
         engine_type = ["EV", "ICEV"]
         self.igraph = iigraph
         self.network = network
         self.nodes = nodes_data
         # random_ids = np.random.uniform(0, self.n, size = self.n)
+
+        # Sample real node ids from the GeoDataFrame index so that each
+        # Vehicle's `destination` is a valid osmnx node id. Vehicle then
+        # resolves it via self.model.nodes.index.get_loc(self.destination)
+        # into a positional igraph id (self.destination_igraph_id).
+        node_ids = self.nodes.index.to_numpy()
+        destinations = self.random.choices(list(node_ids), k=n)
 
         Vehicle.create_agents(
             model=self,
@@ -30,7 +38,7 @@ class Model(Model):
             lat=0.0,
             lon=0.0,
             pos=0,
-            destination=0, # Should be an osmnx node id
+            destination=destinations,  # A valid osmnx node id per agent
         )
 
     
