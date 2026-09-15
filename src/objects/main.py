@@ -26,7 +26,7 @@ def main():
     # Its index is what Vehicle uses to resolve destination -> destination_igraph_id.
     nodes, edges = osmnx.graph_to_gdfs(G)
 
-    nx.write_gml(G, 'London.gml')
+    nx.write_gml(G, f'{place}.gml')
 
     # Build an igraph graph from the networkx graph so that positional
     # (igraph) indices line up with the order of `nodes`. get_loc on the
